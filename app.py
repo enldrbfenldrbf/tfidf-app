@@ -1,10 +1,10 @@
 import requests
 from flask import Flask, request, render_template_string
 from bs4 import BeautifulSoup
-from konlpy.tag import Okt
 from collections import Counter
 import math
 import os
+import re
 
 app = Flask(__name__)
 
@@ -110,8 +110,7 @@ def index():
             soup = BeautifulSoup(response.text, "html.parser")
             text = soup.get_text()
 
-            okt = Okt()
-            words = okt.nouns(text)
+            words = re.findall(r'[가-힣]{2,}', text)
 
             stopwords = [
                 '것','수','등','이','그','저','및','더','때',
@@ -120,7 +119,7 @@ def index():
                 '노컷','노컷뉴스','댓글','바로가기'
             ]
 
-            filtered = [w for w in words if w not in stopwords and len(w) > 1]
+            filtered = [w for w in words if w not in stopwords]
 
             count = Counter(filtered)
             top_words = count.most_common(15)

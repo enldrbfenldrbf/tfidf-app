@@ -13,6 +13,7 @@ HTML = """
 <html>
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>TF-IDF 분석기</title>
 
 <style>
@@ -20,43 +21,46 @@ body {
     margin: 0;
     font-family: 'Segoe UI', sans-serif;
     background: linear-gradient(135deg, #667eea, #764ba2);
-    color: #333;
 }
 
 .container {
     max-width: 900px;
-    margin: 40px auto;
-    padding: 20px;
-}
-
-.card {
-    background: white;
-    border-radius: 16px;
-    padding: 25px;
-    margin-bottom: 20px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    margin: auto;
+    padding: 15px;
 }
 
 h1 {
     text-align: center;
     color: white;
+    font-size: 24px;
+}
+
+.card {
+    background: white;
+    border-radius: 14px;
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
 }
 
 input {
-    width: 75%;
+    width: 100%;
     padding: 12px;
+    margin-bottom: 10px;
     border-radius: 8px;
     border: 1px solid #ddd;
+    font-size: 16px;
 }
 
 button {
-    padding: 12px 18px;
-    border: none;
+    width: 100%;
+    padding: 12px;
     border-radius: 8px;
     background: #667eea;
     color: white;
+    border: none;
+    font-size: 16px;
     cursor: pointer;
-    transition: 0.3s;
 }
 
 button:hover {
@@ -70,10 +74,11 @@ button:hover {
 table {
     width: 100%;
     border-collapse: collapse;
+    font-size: 12px;
 }
 
 th, td {
-    padding: 10px;
+    padding: 8px;
     text-align: center;
 }
 
@@ -94,23 +99,21 @@ tr:nth-child(even) {
     display: inline-block;
     background: #667eea;
     color: white;
-    padding: 6px 10px;
+    padding: 5px 8px;
     border-radius: 8px;
-    margin: 4px;
-    font-size: 14px;
+    margin: 3px;
+    font-size: 12px;
 }
 
 .top-box {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
     gap: 10px;
 }
 
 .top-item {
-    flex: 1;
-    min-width: 120px;
     background: #f5f7fa;
-    padding: 10px;
+    padding: 12px;
     border-radius: 10px;
     text-align: center;
     font-weight: bold;

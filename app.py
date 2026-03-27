@@ -21,6 +21,9 @@ body {
     margin: 0;
     font-family: 'Segoe UI', sans-serif;
     background: linear-gradient(135deg, #667eea, #764ba2);
+    min-height: 100vh;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
 }
 
 .container {
@@ -119,6 +122,18 @@ tr:nth-child(even) {
     font-weight: bold;
 }
 
+.top-item:nth-child(1) {
+    background: #ffd700;
+}
+
+.top-item:nth-child(2) {
+    background: #c0c0c0;
+}
+
+.top-item:nth-child(3) {
+    background: #cd7f32;
+}
+
 .error {
     color: red;
     text-align: center;
@@ -135,7 +150,7 @@ tr:nth-child(even) {
 <div class="card">
 <form method="post">
     <input name="url" placeholder="뉴스 링크 입력">
-    <button type="submit">분석</button>
+    <button type="submit" onclick="this.innerText='분석 중...'">분석</button>
 </form>
 </div>
 
@@ -205,6 +220,9 @@ def index():
     if request.method == "POST":
         try:
             url = request.form.get("url")
+
+            if not url or not url.startswith("http"):
+                raise Exception("올바른 URL을 입력하세요")
 
             response = requests.get(url)
             soup = BeautifulSoup(response.text, "html.parser")

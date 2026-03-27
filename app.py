@@ -12,61 +12,149 @@ HTML = """
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <title>TF-IDF 분석기</title>
-    <style>
-        body {
-            font-family: Arial;
-            background: #f5f7fa;
-            text-align: center;
-        }
-        .box {
-            width: 80%;
-            margin: auto;
-            margin-top: 40px;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-        }
-        input {
-            width: 60%;
-            padding: 10px;
-        }
-        button {
-            padding: 10px;
-            background: #4CAF50;
-            color: white;
-            border: none;
-        }
-        table {
-            width: 100%;
-            margin-top: 20px;
-        }
-        th {
-            background: #4CAF50;
-            color: white;
-        }
-    </style>
+<meta charset="UTF-8">
+<title>TF-IDF 분석기</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: #333;
+}
+
+.container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 20px;
+}
+
+.card {
+    background: white;
+    border-radius: 16px;
+    padding: 25px;
+    margin-bottom: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+h1 {
+    text-align: center;
+    color: white;
+}
+
+input {
+    width: 75%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+button {
+    padding: 12px 18px;
+    border: none;
+    border-radius: 8px;
+    background: #667eea;
+    color: white;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover {
+    background: #5a67d8;
+}
+
+.table-container {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 10px;
+    text-align: center;
+}
+
+th {
+    background: #667eea;
+    color: white;
+}
+
+tr:nth-child(even) {
+    background: #f2f2f2;
+}
+
+.tag-box {
+    margin-top: 10px;
+}
+
+.tag {
+    display: inline-block;
+    background: #667eea;
+    color: white;
+    padding: 6px 10px;
+    border-radius: 8px;
+    margin: 4px;
+    font-size: 14px;
+}
+
+.top-box {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.top-item {
+    flex: 1;
+    min-width: 120px;
+    background: #f5f7fa;
+    padding: 10px;
+    border-radius: 10px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.error {
+    color: red;
+    text-align: center;
+}
+</style>
 </head>
+
 <body>
 
-<div class="box">
-<h2>TF-IDF 분석기</h2>
+<h1>TF-IDF 분석기</h1>
 
+<div class="container">
+
+<div class="card">
 <form method="post">
-    <input name="url" placeholder="기사 링크 입력">
+    <input name="url" placeholder="뉴스 링크 입력">
     <button type="submit">분석</button>
 </form>
+</div>
 
 {% if error %}
-<p style="color:red;">{{error}}</p>
+<p class="error">{{error}}</p>
 {% endif %}
 
 {% if table %}
-<h3>단어사전</h3>
-<p>U = { {{words}} }</p>
 
-<table border="1">
+<div class="card">
+<h3>📚 단어 사전</h3>
+<div class="tag-box">
+{% for word in words %}
+<span class="tag">{{word}}</span>
+{% endfor %}
+</div>
+</div>
+
+<div class="card">
+<h3>📊 TF-IDF 분석</h3>
+<div class="table-container">
+<table>
 <tr>
 <th>단어</th><th>빈도</th><th>TF</th><th>IDF</th><th>TF-IDF</th>
 </tr>
@@ -80,13 +168,22 @@ HTML = """
 </tr>
 {% endfor %}
 </table>
+</div>
+</div>
 
-<h3>Top 5</h3>
-<ul>
+<div class="card">
+<h3>🔥 중요 키워드 TOP 5</h3>
+<div class="top-box">
 {% for word, value in top5 %}
-<li>Top{{loop.index}}. {{word}} ({{"%.6f"|format(value)}})</li>
+<div class="top-item">
+Top{{loop.index}}<br>
+{{word}}<br>
+({{"%.6f"|format(value)}})
+</div>
 {% endfor %}
-</ul>
+</div>
+</div>
+
 {% endif %}
 
 </div>
@@ -99,7 +196,7 @@ HTML = """
 def index():
     table = None
     top5 = None
-    words_str = ""
+    words = []
     error = None
 
     if request.method == "POST":
@@ -110,7 +207,7 @@ def index():
             soup = BeautifulSoup(response.text, "html.parser")
             text = soup.get_text()
 
-            words = re.findall(r'[가-힣]{2,}', text)
+            words_all = re.findall(r'[가-힣]{2,}', text)
 
             stopwords = [
                 '것','수','등','이','그','저','및','더','때',
@@ -119,12 +216,12 @@ def index():
                 '노컷','노컷뉴스','댓글','바로가기'
             ]
 
-            filtered = [w for w in words if w not in stopwords]
+            filtered = [w for w in words_all if w not in stopwords]
 
             count = Counter(filtered)
             top_words = count.most_common(15)
 
-            words_str = ", ".join([w for w, _ in top_words])
+            words = [w for w, _ in top_words]
 
             total = len(filtered) if len(filtered) > 0 else 1
 
@@ -149,7 +246,7 @@ def index():
         except Exception as e:
             error = str(e)
 
-    return render_template_string(HTML, table=table, top5=top5, words=words_str, error=error)
+    return render_template_string(HTML, table=table, top5=top5, words=words, error=error)
 
 
 if __name__ == "__main__":
